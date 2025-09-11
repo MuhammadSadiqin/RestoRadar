@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:resto_radar/data/model/restaurant.dart';
-import 'package:resto_radar/data/provider/favorite/favorite_provider.dart';
+import 'package:resto_radar/data/provider/favorite/local_database_provider.dart';
 import 'package:resto_radar/static/navigation_route.dart';
 import 'package:resto_radar/utils/image_helper.dart';
 
@@ -12,9 +12,9 @@ class RestaurantCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<FavoriteProvider>(
-      builder: (context, favoriteProvider, child) {
-        final isFavorite = favoriteProvider.isFavorite(restaurant.id);
+    return Consumer<LocalDatabaseProvider>(
+      builder: (context, provider, child) {
+        final isFavorite = provider.checkItemBookmark(restaurant.id);
 
         return Card(
           elevation: 2,
@@ -126,7 +126,7 @@ class RestaurantCard extends StatelessWidget {
                   ),
                   IconButton(
                     onPressed: () {
-                      favoriteProvider.toggleFavorite(restaurant);
+                      provider.toggleFavorite(restaurant);
 
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(

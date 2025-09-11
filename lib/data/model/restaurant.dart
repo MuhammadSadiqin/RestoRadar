@@ -34,6 +34,17 @@ class Restaurant {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'description': description,
+      'pictureId': pictureId,
+      'city': city,
+      'rating': rating,
+    };
+  }
+
   factory Restaurant.detailFromJson(Map<String, dynamic> json) {
     return Restaurant(
       id: json['id'],

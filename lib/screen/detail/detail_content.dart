@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:resto_radar/data/model/restaurant.dart';
-import 'package:resto_radar/data/provider/favorite/favorite_provider.dart';
+import 'package:resto_radar/data/provider/favorite/local_database_provider.dart';
 import 'package:resto_radar/utils/image_helper.dart';
 import 'package:resto_radar/utils/theme.dart';
 import 'package:resto_radar/widget/review_card.dart';
@@ -62,9 +62,9 @@ class DetailContent extends StatelessWidget {
               Positioned(
                 top: 16,
                 right: 16,
-                child: Consumer<FavoriteProvider>(
-                  builder: (context, favoriteProvider, child) {
-                    final isFavorite = favoriteProvider.isFavorite(
+                child: Consumer<LocalDatabaseProvider>(
+                  builder: (context, provider, child) {
+                    final isFavorite = provider.checkItemBookmark(
                       restaurant.id,
                     );
                     return Container(
@@ -78,7 +78,7 @@ class DetailContent extends StatelessWidget {
                           color: AppTheme.primaryColor,
                         ),
                         onPressed: () {
-                          favoriteProvider.toggleFavorite(restaurant);
+                          provider.toggleFavorite(restaurant);
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(

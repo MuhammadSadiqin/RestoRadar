@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:resto_radar/data/provider/favorite/local_database_provider.dart';
 import 'package:resto_radar/data/provider/home/restaurant_list_provider.dart';
 import 'package:resto_radar/screen/home/restaurant_list_view.dart';
 import 'package:resto_radar/static/navigation_route.dart';
@@ -25,6 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         context.read<RestaurantListProvider>().fetchRestaurants();
+        context.read<LocalDatabaseProvider>().loadAllRestaurant();
       }
     });
   }

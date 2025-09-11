@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:resto_radar/data/api/api_services.dart';
+import 'package:resto_radar/data/local/local_database_service.dart';
 import 'package:resto_radar/data/provider/detail/restaurant_detail_provider.dart';
-import 'package:resto_radar/data/provider/favorite/favorite_provider.dart';
+import 'package:resto_radar/data/provider/favorite/local_database_provider.dart';
 import 'package:resto_radar/data/provider/home/restaurant_list_provider.dart';
 import 'package:resto_radar/data/provider/main/bottom_nav_provider.dart';
 import 'package:resto_radar/data/provider/restaurant_search_provider.dart';
@@ -27,8 +28,10 @@ class RestoRadarApp extends StatelessWidget {
         ChangeNotifierProvider<BottomNavProvider>(
           create: (_) => BottomNavProvider(),
         ),
-        ChangeNotifierProvider<FavoriteProvider>(
-          create: (_) => FavoriteProvider(),
+        Provider(create: (context) => LocalDatabaseService()),
+        ChangeNotifierProvider(
+          create: (context) =>
+              LocalDatabaseProvider(context.read<LocalDatabaseService>()),
         ),
         ChangeNotifierProvider<RestaurantListProvider>(
           create: (context) =>
