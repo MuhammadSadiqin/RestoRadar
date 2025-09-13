@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:resto_radar/data/api/api_services.dart';
@@ -6,15 +8,23 @@ import 'package:resto_radar/data/provider/detail/restaurant_detail_provider.dart
 import 'package:resto_radar/data/provider/favorite/local_database_provider.dart';
 import 'package:resto_radar/data/provider/home/restaurant_list_provider.dart';
 import 'package:resto_radar/data/provider/main/bottom_nav_provider.dart';
+import 'package:resto_radar/data/provider/reminder/reminder_provider.dart';
 import 'package:resto_radar/data/provider/restaurant_search_provider.dart';
 import 'package:resto_radar/data/provider/theme/theme_provider.dart';
 import 'package:resto_radar/screen/detail/detail_screen.dart';
 import 'package:resto_radar/screen/home/search_screen.dart';
 import 'package:resto_radar/screen/main/main_screen.dart';
 import 'package:resto_radar/static/navigation_route.dart';
+import 'package:resto_radar/utils/background_task.dart';
+import 'package:resto_radar/utils/local_time_config.dart';
 import 'package:resto_radar/utils/theme.dart';
+import 'package:workmanager/workmanager.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  DartPluginRegistrant.ensureInitialized();
+  await configureLocalTimeZone();
+  await Workmanager().initialize(callbackDispatcher);
   runApp(const RestoRadarApp());
 }
 
@@ -25,15 +35,19 @@ class RestoRadarApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<ThemeProvider>(create: (_) => ThemeProvider()),
         Provider<ApiService>(create: (_) => ApiService()),
+        ChangeNotifierProvider<ReminderProvider>(
+          create: (context) => ReminderProvider(context.read<ApiService>()),
+        ),
+        ChangeNotifierProvider<ThemeProvider>(create: (_) => ThemeProvider()),
         ChangeNotifierProvider<BottomNavProvider>(
           create: (_) => BottomNavProvider(),
         ),
         Provider(create: (context) => LocalDatabaseService()),
         ChangeNotifierProvider(
           create: (context) =>
-              LocalDatabaseProvider(context.read<LocalDatabaseService>()),
+              LocalDatabaseProvider(context.read<LocalDatabaseService>())
+                ..loadAllRestaurant(),
         ),
         ChangeNotifierProvider<RestaurantListProvider>(
           create: (context) =>
