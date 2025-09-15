@@ -7,9 +7,16 @@ import 'package:resto_radar/utils/theme.dart';
 import 'package:resto_radar/widget/review_card.dart';
 import 'package:resto_radar/widget/review_form.dart';
 
-class DetailContent extends StatelessWidget {
+class DetailContent extends StatefulWidget {
   final Restaurant restaurant;
   const DetailContent({super.key, required this.restaurant});
+
+  @override
+  State<DetailContent> createState() => _DetailContentState();
+}
+
+class _DetailContentState extends State<DetailContent> {
+  bool _isExpanded = false;
 
   @override
   Widget build(BuildContext context) {
@@ -22,11 +29,11 @@ class DetailContent extends StatelessWidget {
           Stack(
             children: [
               Hero(
-                tag: 'restaurant-${restaurant.id}',
+                tag: 'restaurant-${widget.restaurant.id}',
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: Image.network(
-                    ImageHelper.getLargeImage(restaurant.pictureId),
+                    ImageHelper.getLargeImage(widget.restaurant.pictureId),
                     width: double.infinity,
                     height: 250,
                     fit: BoxFit.cover,
@@ -65,7 +72,7 @@ class DetailContent extends StatelessWidget {
                 child: Consumer<LocalDatabaseProvider>(
                   builder: (context, provider, child) {
                     final isFavorite = provider.checkItemBookmark(
-                      restaurant.id,
+                      widget.restaurant.id,
                     );
                     return Container(
                       decoration: const BoxDecoration(
@@ -78,13 +85,13 @@ class DetailContent extends StatelessWidget {
                           color: AppTheme.primaryColor,
                         ),
                         onPressed: () {
-                          provider.toggleFavorite(restaurant);
+                          provider.toggleFavorite(widget.restaurant);
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(
                                 isFavorite
-                                    ? '${restaurant.name} dihapus dari favorit'
-                                    : '${restaurant.name} ditambahkan ke favorit',
+                                    ? '${widget.restaurant.name} dihapus dari favorit'
+                                    : '${widget.restaurant.name} ditambahkan ke favorit',
                               ),
                             ),
                           );
@@ -105,7 +112,7 @@ class DetailContent extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  restaurant.name,
+                  widget.restaurant.name,
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -119,7 +126,7 @@ class DetailContent extends StatelessWidget {
                   const Icon(Icons.star, color: Colors.amber, size: 20),
                   const SizedBox(width: 4),
                   Text(
-                    restaurant.rating.toString(),
+                    widget.restaurant.rating.toString(),
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                 ],
@@ -136,7 +143,7 @@ class DetailContent extends StatelessWidget {
               const SizedBox(width: 4),
               Expanded(
                 child: Text(
-                  restaurant.city,
+                  widget.restaurant.city,
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),
@@ -146,14 +153,14 @@ class DetailContent extends StatelessWidget {
           SizedBox(height: 16),
 
           // Address
-          if (restaurant.address != null) ...[
+          if (widget.restaurant.address != null) ...[
             Row(
               children: [
                 const Icon(Icons.location_on, color: Colors.grey, size: 20),
                 const SizedBox(width: 4),
                 Expanded(
                   child: Text(
-                    restaurant.address!,
+                    widget.restaurant.address!,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),
@@ -165,8 +172,8 @@ class DetailContent extends StatelessWidget {
           const SizedBox(height: 8),
 
           // Categories
-          if (restaurant.categories != null &&
-              restaurant.categories!.isNotEmpty) ...[
+          if (widget.restaurant.categories != null &&
+              widget.restaurant.categories!.isNotEmpty) ...[
             const Text(
               'Kategori:',
               style: TextStyle(fontWeight: FontWeight.bold),
@@ -174,7 +181,7 @@ class DetailContent extends StatelessWidget {
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
-              children: restaurant.categories!
+              children: widget.restaurant.categories!
                   .map(
                     (category) => Chip(
                       label: Text(category.name),
@@ -187,15 +194,40 @@ class DetailContent extends StatelessWidget {
           ],
 
           // Description
-          Text(
-            restaurant.description,
-            textAlign: TextAlign.justify,
-            style: Theme.of(context).textTheme.bodyMedium,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                widget.restaurant.description,
+                textAlign: TextAlign.justify,
+                style: Theme.of(context).textTheme.bodyMedium,
+                maxLines: _isExpanded ? null : 3,
+                overflow: _isExpanded
+                    ? TextOverflow.visible
+                    : TextOverflow.ellipsis,
+              ),
+              if (widget.restaurant.description.length >
+                  150) // Hanya tampilkan tombol jika deskripsi panjang
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _isExpanded = !_isExpanded;
+                    });
+                  },
+                  child: Text(
+                    _isExpanded ? 'Sembunyikan' : 'Baca selengkapnya',
+                    style: TextStyle(
+                      color: AppTheme.primaryColor,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+            ],
           ),
           const SizedBox(height: 16),
 
           // Menus - Foods
-          if (restaurant.menus != null) ...[
+          if (widget.restaurant.menu != null) ...[
             Text(
               'Menu Makanan:',
               style: Theme.of(
@@ -206,7 +238,7 @@ class DetailContent extends StatelessWidget {
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
-                children: restaurant.menus!.foods
+                children: widget.restaurant.menu!.foods
                     .map(
                       (food) => Padding(
                         padding: const EdgeInsets.only(right: 8),
@@ -232,7 +264,7 @@ class DetailContent extends StatelessWidget {
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
-                children: restaurant.menus!.drinks
+                children: widget.restaurant.menu!.drinks
                     .map(
                       (drink) => Padding(
                         padding: const EdgeInsets.only(right: 8),
@@ -258,7 +290,8 @@ class DetailContent extends StatelessWidget {
               ),
               IconButton(
                 icon: const Icon(Icons.add, size: 24),
-                onPressed: () => _showAddReviewDialog(context, restaurant.id),
+                onPressed: () =>
+                    _showAddReviewDialog(context, widget.restaurant.id),
                 tooltip: 'Tambah Ulasan',
                 style: IconButton.styleFrom(
                   backgroundColor: Theme.of(context).colorScheme.primary,
@@ -273,9 +306,9 @@ class DetailContent extends StatelessWidget {
           const SizedBox(height: 16),
 
           // Reviews List
-          if (restaurant.customerReviews != null &&
-              restaurant.customerReviews!.isNotEmpty) ...[
-            ...restaurant.customerReviews!.map(
+          if (widget.restaurant.customerReviews != null &&
+              widget.restaurant.customerReviews!.isNotEmpty) ...[
+            ...widget.restaurant.customerReviews!.map(
               (review) => ReviewCard(review: review),
             ),
           ] else ...[

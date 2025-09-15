@@ -79,116 +79,141 @@ class _ReviewFormState extends State<ReviewForm> {
       builder: (context, provider, child) {
         final isSubmitting = provider.state is LoadingState;
 
-        return Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Header
-              const Text(
-                'Tambah Ulasan',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 20),
-
-              // Name Field
-              TextFormField(
-                controller: _nameController,
-                decoration: InputDecoration(
-                  labelText: 'Nama',
-                  hintText: 'Masukkan nama Anda',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+        return SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Header
+                const Text(
+                  'Tambah Ulasan',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
                 ),
-                textInputAction: TextInputAction.next,
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Nama harus diisi';
-                  }
-                  if (value.trim().length < 2) {
-                    return 'Nama minimal 2 karakter';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
+                const SizedBox(height: 20),
 
-              // Review Field
-              TextFormField(
-                controller: _reviewController,
-                decoration: InputDecoration(
-                  labelText: 'Ulasan',
-                  hintText: 'Bagikan pengalaman Anda...',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  alignLabelWithHint: true,
-                ),
-                maxLines: 4,
-                minLines: 3,
-                textInputAction: TextInputAction.done,
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Ulasan harus diisi';
-                  }
-                  if (value.trim().length < 10) {
-                    return 'Ulasan minimal 10 karakter';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 24),
-
-              // Buttons
-              Row(
-                children: [
-                  // Cancel Button
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: isSubmitting ? null : _cancelForm,
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: const Text('Batal'),
+                // Name Field
+                TextFormField(
+                  controller: _nameController,
+                  decoration: InputDecoration(
+                    labelText: 'Nama',
+                    hintText: 'Masukkan nama Anda',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  textInputAction: TextInputAction.next,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Nama harus diisi';
+                    }
+                    if (value.trim().length < 2) {
+                      return 'Nama minimal 2 karakter';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
 
-                  // Submit Button
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: isSubmitting
-                          ? null
-                          : () => _submitReview(provider),
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                // Review Field
+                TextFormField(
+                  controller: _reviewController,
+                  decoration: InputDecoration(
+                    labelText: 'Ulasan',
+                    hintText: 'Bagikan pengalaman Anda...',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    alignLabelWithHint: true,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
+                  ),
+                  maxLines: 4,
+                  minLines: 3,
+                  textInputAction: TextInputAction.done,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Ulasan harus diisi';
+                    }
+                    if (value.trim().length < 10) {
+                      return 'Ulasan minimal 10 karakter';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 24),
+
+                // Buttons
+                Row(
+                  children: [
+                    // Cancel Button
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: isSubmitting ? null : _cancelForm,
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          side: BorderSide(
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        ),
+                        child: Text(
+                          'Batal',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
-                      child: isSubmitting
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation(
-                                  Colors.white,
+                    ),
+                    const SizedBox(width: 12),
+
+                    // Submit Button
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: isSubmitting
+                            ? null
+                            : () => _submitReview(provider),
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          backgroundColor: Theme.of(
+                            context,
+                          ).colorScheme.primary,
+                        ),
+                        child: isSubmitting
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation(
+                                    Colors.white,
+                                  ),
                                 ),
+                              )
+                            : const Text(
+                                'Kirim',
+                                style: TextStyle(fontWeight: FontWeight.w600),
                               ),
-                            )
-                          : const Text('Kirim'),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         );
       },
